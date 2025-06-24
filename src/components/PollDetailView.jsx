@@ -6,57 +6,44 @@ const PollDetailView = ({ poll, onClose }) => {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'} Details</h2>
-        
-        {poll.pollDescription && (
-          <p style={styles.description}>{poll.pollDescription}</p>
-        )}
+        <button onClick={onClose} style={styles.closeBtn}>X</button>
+        <h2 style={{ marginBottom: '0.5rem' }}>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}</h2>
 
-        {poll.options.map((option, idx) => (
-          <div key={idx} style={styles.optionBox}>
-            <strong>Option {idx + 1}:</strong>
-            <p>{option}</p>
-          </div>
-        ))}
+        {poll.pollDescription && <p style={styles.description}>{poll.pollDescription}</p>}
+
+        <ul style={styles.optionList}>
+          {poll.options.map((opt, i) => (
+            <li key={i} style={styles.option}>{opt}</li>
+          ))}
+        </ul>
 
         {poll.images?.length > 0 && (
-          <div style={styles.mediaRow}>
+          <div style={styles.imageRow}>
             {poll.images.map((img, i) => (
-              <img key={i} src={img} alt={`Option ${i + 1}`} style={styles.image} />
+              <img key={i} src={URL.createObjectURL(img)} alt={`Option ${i + 1}`} style={styles.image} />
             ))}
           </div>
         )}
 
         {poll.video && (
-          <video controls style={styles.video}>
-            <source src={poll.video} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <video src={URL.createObjectURL(poll.video)} controls style={styles.video} />
         )}
 
         {poll.affiliateLinks?.map((link, i) => (
           link && (
-            <p key={i}>
-              <a href={link} target="_blank" rel="noopener noreferrer" style={styles.link}>
-                Affiliate Link {i + 1}
-              </a>
+            <p key={i} style={styles.link}>
+              Affiliate {i + 1}: <a href={link} target="_blank" rel="noreferrer">{link}</a>
             </p>
           )
         ))}
 
-        {poll.pledgeAmount && (
-          <p style={styles.pledge}>
-            💸 Pre-commitment Pledge: ${poll.pledgeAmount.toFixed(2)}
-          </p>
+        {poll.pledgeAmount > 0 && (
+          <p style={styles.pledge}>Pledge: ${poll.pledgeAmount.toFixed(2)}</p>
         )}
 
         {poll.expiresAt && (
-          <p style={styles.expiry}>
-            ⏰ Expires: {new Date(poll.expiresAt).toLocaleString()}
-          </p>
+          <p style={styles.expiration}>Expires: {new Date(poll.expiresAt).toLocaleString()}</p>
         )}
-
-        <button onClick={onClose} style={styles.closeButton}>Close</button>
       </div>
     </div>
   );
@@ -65,74 +52,77 @@ const PollDetailView = ({ poll, onClose }) => {
 const styles = {
   overlay: {
     position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 9999
+    zIndex: 1000,
   },
   modal: {
     backgroundColor: '#fff',
-    borderRadius: '2rem',
     padding: '2rem',
-    width: '90%',
+    borderRadius: '12px',
     maxWidth: '600px',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
-    fontFamily: 'sans-serif',
-    animation: 'fadeIn 0.4s ease-in-out'
+    width: '90%',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+    position: 'relative',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+  },
+  closeBtn: {
+    position: 'absolute',
+    top: '1rem',
+    right: '1rem',
+    background: 'transparent',
+    border: 'none',
+    fontSize: '1.25rem',
+    cursor: 'pointer',
   },
   description: {
-    marginBottom: '1.5rem',
+    marginBottom: '1rem',
     fontSize: '1rem',
     color: '#333'
   },
-  optionBox: {
-    backgroundColor: '#f5f5f5',
-    padding: '0.75rem',
-    borderRadius: '0.75rem',
+  optionList: {
+    paddingLeft: '1.25rem',
     marginBottom: '1rem'
   },
-  mediaRow: {
+  option: {
+    marginBottom: '0.5rem'
+  },
+  imageRow: {
     display: 'flex',
-    gap: '1rem',
+    gap: '0.5rem',
     flexWrap: 'wrap',
-    marginTop: '1rem',
-    marginBottom: '1rem'
+    marginBottom: '1rem',
   },
   image: {
-    width: '100px',
-    height: '100px',
+    width: '120px',
+    height: '120px',
     objectFit: 'cover',
-    borderRadius: '0.75rem'
+    borderRadius: '8px'
   },
   video: {
     width: '100%',
     marginTop: '1rem',
-    borderRadius: '0.75rem'
+    borderRadius: '8px'
   },
   link: {
+    fontSize: '0.85rem',
     color: '#007bff',
-    textDecoration: 'underline',
-    fontSize: '0.95rem'
+    marginBottom: '0.25rem'
   },
   pledge: {
-    marginTop: '1rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginTop: '1rem'
   },
-  expiry: {
-    marginTop: '0.5rem',
-    fontSize: '0.9rem',
-    color: '#555'
-  },
-  closeButton: {
-    marginTop: '2rem',
-    background: '#000',
-    color: '#fff',
-    padding: '0.75rem 1.5rem',
-    border: 'none',
-    borderRadius: '1rem',
-    cursor: 'pointer'
+  expiration: {
+    fontSize: '0.85rem',
+    color: '#888'
   }
 };
 
