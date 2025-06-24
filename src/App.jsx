@@ -4,6 +4,8 @@ import PollFeed from "./components/PollFeed";
 import NewPollModal from "./components/NewPollModal";
 import PollDetailView from "./components/PollDetailView";
 import SecondOpinionDetailView from "./components/SecondOpinionDetailView";
+import BottomNavBar from "./components/BottomNavBar";
+
 
 const App = () => {
   const [polls, setPolls] = React.useState([]);
@@ -38,6 +40,7 @@ const App = () => {
           element={<SecondOpinionDetailView polls={polls} />}
         />
       </Routes>
+      <BottomNavBar />
     </Router>
   );
 };
