@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const PollFeed = ({ polls, onPollClick }) => {
+const PollFeed = ({ polls }) => {
   const calculateTimeLeft = (expiresAt) => {
     const difference = new Date(expiresAt) - new Date();
     let timeLeft = {};
@@ -35,33 +35,23 @@ const PollFeed = ({ polls, onPollClick }) => {
             : {};
 
         return (
-          <div
-            key={index}
-            style={styles.card}
-            onClick={() => onPollClick(poll)}
-          >
-            <h3>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}</h3>
-            {poll.pollDescription && (
-              <p style={styles.description}>
-                {poll.pollDescription.length > 125
-                  ? `${poll.pollDescription.slice(0, 125)}...`
-                  : poll.pollDescription}
-              </p>
-            )}
+          <div key={index} style={styles.card}>
+            <h3>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}: {poll.options?.[0]}</h3>
             <ul>
               {poll.options.map((opt, i) => (
                 <li key={i}>{opt}</li>
               ))}
             </ul>
-            {poll.affiliateLinks?.map((link, i) => (
-              link && (
-                <p key={i} style={styles.affiliate}>
-                  Affiliate {i + 1}: <a href={link} target="_blank" rel="noreferrer">{link}</a>
-                </p>
-              )
-            ))}
+            {poll.pollDescription && (
+              <p style={{ marginTop: '0.5rem' }}>{poll.pollDescription}</p>
+            )}
+            {poll.affiliateLinks?.[0] && (
+              <p style={{ fontSize: '0.85rem', color: '#007bff' }}>
+                Affiliate: <a href={poll.affiliateLinks[0]} target="_blank" rel="noreferrer">{poll.affiliateLinks[0]}</a>
+              </p>
+            )}
             {poll.pledgeAmount && (
-              <p style={styles.pledge}>Pledge: ${poll.pledgeAmount.toFixed(2)}</p>
+              <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>Pledge: ${poll.pledgeAmount.toFixed(2)}</p>
             )}
             {poll.expiresAt && (
               <p style={{ ...timeStyle, fontSize: '0.85rem' }}>
@@ -81,23 +71,7 @@ const styles = {
     padding: '1rem',
     borderRadius: '10px',
     marginBottom: '1rem',
-    backgroundColor: '#fff',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)',
-    cursor: 'pointer',
-    transition: 'transform 0.2s ease-in-out',
-  },
-  description: {
-    fontSize: '0.95rem',
-    marginBottom: '0.75rem',
-    color: '#444'
-  },
-  affiliate: {
-    fontSize: '0.85rem',
-    color: '#007bff'
-  },
-  pledge: {
-    marginTop: '0.5rem',
-    fontWeight: 'bold'
+    backgroundColor: '#fff'
   }
 };
 
