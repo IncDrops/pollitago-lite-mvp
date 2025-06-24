@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import PollDetailsModal from './components/PollDetailsModal';
+
 
 const PollFeed = ({ polls }) => {
   return (
