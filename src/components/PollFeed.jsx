@@ -47,12 +47,13 @@ const PollFeed = ({ polls }) => {
 
 const styles = {
   card: {
-    border: '1px solid #ccc',
-    padding: '1rem',
-    borderRadius: '10px',
-    marginBottom: '1rem',
-    backgroundColor: '#fff'
-  },
+  border: '1px solid #ddd',
+  padding: '1.5rem',
+  borderRadius: '1.25rem',
+  marginBottom: '1.5rem',
+  backgroundColor: '#fff',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+},
   description: {
     marginBottom: '1rem',
     fontStyle: 'italic',

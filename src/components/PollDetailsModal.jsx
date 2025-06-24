@@ -1,73 +1,81 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const PollDetailsModal = ({ poll, onClose }) => {
-  if (!poll) return null;
+const PollFeed = ({ polls }) => {
+  const calculateTimeLeft = (expiresAt) => {
+    const difference = new Date(expiresAt) - new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+      };
+    }
+
+    return timeLeft;
+  };
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <h2>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'} Details</h2>
+    <div style={{ marginTop: '2rem' }}>
+      {polls.map((poll, index) => {
+        const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(poll.expiresAt));
 
-        <p><strong>Description:</strong> {poll.pollDescription}</p>
+        useEffect(() => {
+          const timer = setInterval(() => {
+            setTimeLeft(calculateTimeLeft(poll.expiresAt));
+          }, 60000);
 
-        <ul>
-          {poll.options.map((opt, idx) => (
-            <li key={idx}><strong>Option {idx + 1}:</strong> {opt}</li>
-          ))}
-        </ul>
+          return () => clearInterval(timer);
+        }, [poll.expiresAt]);
 
-        {poll.images && poll.images.map((img, idx) => (
-          <img key={idx} src={URL.createObjectURL(img)} alt={`Option ${idx + 1}`} style={styles.image} />
-        ))}
+        const timeStyle =
+          timeLeft.days === 0 && timeLeft.hours < 1
+            ? { color: 'red', fontWeight: 'bold' }
+            : {};
 
-        {poll.video && (
-          <video controls style={styles.video}>
-            <source src={URL.createObjectURL(poll.video)} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-
-        {poll.affiliateLinks?.map((link, i) => (
-          link && (
-            <p key={i} style={{ fontSize: '0.9rem' }}>
-              <strong>Affiliate Link {i + 1}:</strong> <a href={link} target="_blank" rel="noreferrer">{link}</a>
-            </p>
-          )
-        ))}
-
-        {poll.pledgeAmount && (
-          <p><strong>Pledge:</strong> ${poll.pledgeAmount.toFixed(2)}</p>
-        )}
-
-        {poll.expiresAt && (
-          <p><strong>Expires At:</strong> {new Date(poll.expiresAt).toLocaleString()}</p>
-        )}
-
-        <button onClick={onClose} style={styles.closeBtn}>Close</button>
-      </div>
+        return (
+          <div key={index} style={styles.card}>
+            <h3>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}: {poll.options?.[0]}</h3>
+            <ul>
+              {poll.options.map((opt, i) => (
+                <li key={i}>{opt}</li>
+              ))}
+            </ul>
+            {poll.pollDescription && (
+              <p style={{ marginTop: '0.5rem' }}>{poll.pollDescription}</p>
+            )}
+            {poll.affiliateLinks?.map((link, i) => (
+              link && (
+                <p key={i} style={{ fontSize: '0.85rem', color: '#007bff' }}>
+                  Affiliate {i + 1}: <a href={link} target="_blank" rel="noreferrer">{link}</a>
+                </p>
+              )
+            ))}
+            {poll.pledgeAmount && (
+              <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>Pledge: ${poll.pledgeAmount.toFixed(2)}</p>
+            )}
+            {poll.expiresAt && (
+              <p style={{ ...timeStyle, fontSize: '0.85rem' }}>
+                Time Left: {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+              </p>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
 
 const styles = {
-  overlay: {
-    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000
-  },
-  modal: {
-    background: '#fff', padding: '2rem', borderRadius: '1rem', width: '95%', maxWidth: '600px',
-    fontFamily: 'sans-serif', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', overflowY: 'auto', maxHeight: '90vh'
-  },
-  image: {
-    width: '100%', borderRadius: '10px', marginTop: '1rem'
-  },
-  video: {
-    width: '100%', marginTop: '1rem', borderRadius: '10px'
-  },
-  closeBtn: {
-    marginTop: '1.5rem', background: '#007bff', color: '#fff', border: 'none', padding: '0.7rem 1.2rem',
-    borderRadius: '5px', cursor: 'pointer'
+  card: {
+    border: '1px solid #ddd',
+    padding: '1.5rem',
+    borderRadius: '1.25rem',
+    marginBottom: '1.5rem',
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
   }
 };
 
-export default PollDetailsModal;
+export default PollFeed;
