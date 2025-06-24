@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 
 const NewPollModal = ({ onClose, onCreatePoll }) => {
   const [mode, setMode] = useState('poll'); // 'poll' or 'opinion'
-  const [options, setOptions] = useState(['', '']);
+  const [descriptions, setDescriptions] = useState(['', '', '', '']);
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
-  const [affiliateLinks, setAffiliateLinks] = useState(['', '']);
+  const [affiliateLinks, setAffiliateLinks] = useState(['', '', '', '']);
+  const [pollDescription, setPollDescription] = useState('');
+  const [pledge, setPledge] = useState('');
+  const [timer, setTimer] = useState('');
 
-  const handleOptionChange = (value, index) => {
-    const updated = [...options];
+  const handleDescriptionChange = (value, index) => {
+    const updated = [...descriptions];
     updated[index] = value;
-    setOptions(updated);
+    setDescriptions(updated);
   };
 
   const handleImageUpload = (e) => {
@@ -28,21 +31,18 @@ const NewPollModal = ({ onClose, onCreatePoll }) => {
     setAffiliateLinks(updated);
   };
 
-  const addOption = () => {
-    if (options.length < 4) {
-      setOptions([...options, '']);
-    }
-  };
-
   const handleSubmit = () => {
-    const newPoll = {
+    console.log('Submitting:', {
       mode,
-      options,
+      descriptions,
       images,
       video,
-      affiliateLinks
-    };
-    onCreatePoll(newPoll);
+      affiliateLinks,
+      pollDescription,
+      pledge,
+      timer,
+    });
+    alert('Poll submitted (mock)');
     onClose();
   };
 
@@ -66,24 +66,24 @@ const NewPollModal = ({ onClose, onCreatePoll }) => {
           </button>
         </div>
 
-        {mode === 'poll' ? (
-          <>
-            {options.map((opt, idx) => (
-              <input
-                key={idx}
-                placeholder={`Option ${idx + 1}`}
-                value={opt}
-                onChange={(e) => handleOptionChange(e.target.value, idx)}
-                style={styles.input}
-              />
-            ))}
-            {options.length < 4 && (
-              <button onClick={addOption} style={styles.smallButton}>+ Add Option</button>
-            )}
-          </>
-        ) : (
-          <p>Upload up to 2 images to describe your situation.</p>
-        )}
+        <label style={styles.label}>Poll Description (max 500 characters):</label>
+        <textarea
+          value={pollDescription}
+          onChange={(e) => setPollDescription(e.target.value)}
+          maxLength={500}
+          style={styles.input}
+        />
+
+        {descriptions.map((desc, idx) => (
+          <input
+            key={idx}
+            placeholder={`Option ${idx + 1} Description (max 150 characters)`}
+            value={desc}
+            onChange={(e) => handleDescriptionChange(e.target.value, idx)}
+            maxLength={150}
+            style={styles.input}
+          />
+        ))}
 
         <label style={styles.label}>Upload Image(s):</label>
         <input
@@ -102,23 +102,37 @@ const NewPollModal = ({ onClose, onCreatePoll }) => {
           style={styles.input}
         />
 
-        <label style={styles.label}>Affiliate Link{mode === 'poll' ? 's' : ''}:</label>
-        <input
-          type="url"
-          placeholder="Link 1"
-          value={affiliateLinks[0]}
-          onChange={(e) => handleAffiliateLinkChange(e.target.value, 0)}
-          style={styles.input}
-        />
-        {mode === 'poll' && (
+        <label style={styles.label}>Affiliate Links:</label>
+        {affiliateLinks.map((link, idx) => (
           <input
+            key={idx}
             type="url"
-            placeholder="Link 2 (optional)"
-            value={affiliateLinks[1]}
-            onChange={(e) => handleAffiliateLinkChange(e.target.value, 1)}
+            placeholder={`Affiliate Link ${idx + 1}`}
+            value={link}
+            onChange={(e) => handleAffiliateLinkChange(e.target.value, idx)}
             style={styles.input}
           />
-        )}
+        ))}
+
+        <label style={styles.label}>Pre-Commitment Pledge ($1 minimum):</label>
+        <input
+          type="number"
+          placeholder="$1.00"
+          min="1"
+          step="0.01"
+          value={pledge}
+          onChange={(e) => setPledge(e.target.value)}
+          style={styles.input}
+        />
+
+        <label style={styles.label}>Set Timer (Format: 1-59 minutes, 1-24 hours, or 1-31 days):</label>
+        <input
+          type="text"
+          placeholder="e.g., 3 hours"
+          value={timer}
+          onChange={(e) => setTimer(e.target.value)}
+          style={styles.input}
+        />
 
         <button onClick={handleSubmit} style={styles.submitButton}>Poll it & Go</button>
         <p style={styles.disclaimer}>Poll responsibly, the ultimate decision still belongs to you.</p>
@@ -143,7 +157,6 @@ const styles = {
   inactiveToggle: { padding: '0.5rem 1rem', background: '#ccc', color: '#000', borderRadius: '5px' },
   input: { display: 'block', width: '100%', padding: '0.5rem', marginBottom: '1rem', borderRadius: '5px' },
   label: { fontWeight: 'bold', marginTop: '1rem' },
-  smallButton: { marginBottom: '1rem', padding: '0.3rem 0.6rem' },
   submitButton: { background: '#007bff', color: '#fff', padding: '0.7rem', width: '100%', borderRadius: '5px', border: 'none' },
   disclaimer: { fontSize: '0.9rem', color: '#555', marginTop: '1rem' },
   closeButton: { marginTop: '1rem', background: 'none', border: 'none', color: '#007bff', cursor: 'pointer' }

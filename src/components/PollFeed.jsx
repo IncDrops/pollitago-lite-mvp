@@ -5,17 +5,38 @@ const PollFeed = ({ polls }) => {
     <div style={{ marginTop: '2rem' }}>
       {polls.map((poll, index) => (
         <div key={index} style={styles.card}>
-          <h3>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}: {poll.options?.[0]}</h3>
-          <ul>
-            {poll.options.map((opt, i) => (
-              <li key={i}>{opt}</li>
-            ))}
-          </ul>
-          {poll.affiliateLinks?.[0] && (
-            <p style={{ fontSize: '0.85rem', color: '#007bff' }}>
-              Affiliate: <a href={poll.affiliateLinks[0]} target="_blank" rel="noreferrer">{poll.affiliateLinks[0]}</a>
-            </p>
+          <h3>{poll.mode === 'poll' ? 'Poll' : '2nd Opinion'}</h3>
+          <p style={styles.description}>{poll.pollDescription}</p>
+
+          {poll.descriptions?.map((desc, i) => (
+            <div key={i} style={styles.optionBox}>
+              <strong>Option {i + 1}:</strong> <span>{desc}</span>
+            </div>
+          ))}
+
+          {poll.images?.length > 0 && (
+            <div style={styles.imageGrid}>
+              {poll.images.map((img, i) => (
+                <img key={i} src={URL.createObjectURL(img)} alt={`Option ${i + 1}`} style={styles.image} />
+              ))}
+            </div>
           )}
+
+          {poll.video && (
+            <video controls style={styles.video}>
+              <source src={URL.createObjectURL(poll.video)} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
+
+          {poll.affiliateLinks?.map((link, i) => (
+            link && (
+              <p key={i} style={styles.link}>
+                Link {i + 1}:{' '}
+                <a href={link} target="_blank" rel="noreferrer">{link}</a>
+              </p>
+            )
+          ))}
         </div>
       ))}
     </div>
@@ -29,6 +50,34 @@ const styles = {
     borderRadius: '10px',
     marginBottom: '1rem',
     backgroundColor: '#fff'
+  },
+  description: {
+    marginBottom: '1rem',
+    fontStyle: 'italic',
+    color: '#333'
+  },
+  optionBox: {
+    marginBottom: '0.5rem'
+  },
+  imageGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+    gap: '0.5rem',
+    marginTop: '1rem',
+    marginBottom: '1rem'
+  },
+  image: {
+    width: '100%',
+    borderRadius: '5px'
+  },
+  video: {
+    width: '100%',
+    marginTop: '1rem',
+    borderRadius: '5px'
+  },
+  link: {
+    fontSize: '0.85rem',
+    color: '#007bff'
   }
 };
 
