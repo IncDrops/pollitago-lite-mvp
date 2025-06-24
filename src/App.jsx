@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import NewPollModal from './components/NewPollModal';
+import PollFeed from './components/PollFeed';
 
 const App = () => {
   const [showNewPoll, setShowNewPoll] = useState(false);
+  const [polls, setPolls] = useState([]); // Feed state
+
+  const handleCreatePoll = (pollData) => {
+    setPolls([pollData, ...polls]); // Add new poll to top
+  };
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
@@ -21,11 +27,15 @@ const App = () => {
       </button>
 
       {showNewPoll && (
-        <NewPollModal onClose={() => setShowNewPoll(false)} />
+        <NewPollModal
+          onClose={() => setShowNewPoll(false)}
+          onCreatePoll={handleCreatePoll}
+        />
       )}
+
+      <PollFeed polls={polls} />
     </div>
   );
 };
 
 export default App;
-
