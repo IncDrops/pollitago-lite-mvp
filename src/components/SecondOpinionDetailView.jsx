@@ -1,106 +1,94 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { useParams } from "react-router-dom";
 
-const SecondOpinionDetailView = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const opinion = location.state?.opinion;
+const SecondOpinionDetailView = ({ polls }) => {
+  const { id } = useParams();
+  const poll = polls?.[id];
 
-  if (!opinion) {
-    return <p>No opinion data found.</p>;
-  }
+  if (!poll) return <p>Poll not found.</p>;
 
   return (
-    <div style={styles.container}>
-      <button onClick={() => navigate(-1)} style={styles.backButton}>
-        ← Back
-      </button>
-      <h2 style={styles.title}>2nd Opinion Request</h2>
-      <p style={styles.description}>{opinion.pollDescription}</p>
-
-      {opinion.images?.length > 0 && (
-        <div style={styles.imageGrid}>
-          {opinion.images.map((img, idx) => (
-            <img
-              key={idx}
-              src={URL.createObjectURL(img)}
-              alt={`Option ${idx + 1}`}
-              style={styles.image}
-            />
+    <div style={styles.wrapper}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>2nd Opinion</h2>
+        {poll.pollDescription && (
+          <p style={styles.description}>{poll.pollDescription}</p>
+        )}
+        <div style={styles.options}>
+          {poll.options?.map((opt, i) => (
+            <div key={i} style={styles.option}>
+              <p>{opt}</p>
+              {poll.images?.[i] && (
+                <img
+                  src={URL.createObjectURL(poll.images[i])}
+                  alt={`Option ${i + 1}`}
+                  style={styles.image}
+                />
+              )}
+            </div>
           ))}
         </div>
-      )}
-
-      {opinion.options.map((option, i) => (
-        <div key={i} style={styles.optionBox}>
-          <p style={styles.optionText}>{option}</p>
-        </div>
-      ))}
-
-      {opinion.pledgeAmount && (
-        <p style={styles.pledge}>Pledge: ${opinion.pledgeAmount.toFixed(2)}</p>
-      )}
-
-      {opinion.expiresAt && (
-        <p style={styles.expiration}>Expires: {new Date(opinion.expiresAt).toLocaleString()}</p>
-      )}
+        {poll.affiliateLinks?.map((link, i) =>
+          link ? (
+            <p key={i} style={styles.link}>
+              Affiliate {i + 1}: <a href={link} target="_blank" rel="noreferrer">{link}</a>
+            </p>
+          ) : null
+        )}
+        {poll.pledgeAmount && (
+          <p style={styles.pledge}>Pledge: ${poll.pledgeAmount.toFixed(2)}</p>
+        )}
+      </div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    padding: '1.5rem',
-    borderRadius: '1rem',
-    background: '#fff',
-    maxWidth: '600px',
-    margin: '2rem auto',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'
+  wrapper: {
+    padding: "2rem",
+    display: "flex",
+    justifyContent: "center",
   },
-  backButton: {
-    background: 'none',
-    border: 'none',
-    color: '#007bff',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    marginBottom: '1rem'
+  card: {
+    width: "100%",
+    maxWidth: "600px",
+    padding: "1.5rem",
+    borderRadius: "1rem",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+    backgroundColor: "#fff"
   },
   title: {
-    fontSize: '1.5rem',
-    marginBottom: '0.5rem'
+    fontSize: "1.5rem",
+    marginBottom: "1rem",
   },
   description: {
-    fontSize: '1rem',
-    marginBottom: '1rem'
+    fontSize: "1rem",
+    marginBottom: "1rem",
   },
-  imageGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-    gap: '0.75rem',
-    marginBottom: '1rem'
+  options: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    marginBottom: "1rem",
+  },
+  option: {
+    background: "#f9f9f9",
+    padding: "0.75rem",
+    borderRadius: "0.5rem",
   },
   image: {
-    width: '100%',
-    borderRadius: '0.5rem',
-    objectFit: 'cover'
+    marginTop: "0.5rem",
+    maxWidth: "100%",
+    borderRadius: "0.5rem"
   },
-  optionBox: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    padding: '0.75rem',
-    marginBottom: '0.5rem'
-  },
-  optionText: {
-    fontSize: '0.95rem'
+  link: {
+    fontSize: "0.85rem",
+    color: "#007bff",
+    marginBottom: "0.5rem",
   },
   pledge: {
-    fontWeight: 'bold',
-    marginTop: '1rem'
-  },
-  expiration: {
-    fontSize: '0.85rem',
-    color: '#999',
-    marginTop: '0.5rem'
+    fontWeight: "bold",
+    marginTop: "1rem",
   }
 };
 
