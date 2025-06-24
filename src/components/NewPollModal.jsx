@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
+const NewPollModal = ({ onClose, onCreatePoll }) => {
   const [mode, setMode] = useState('poll'); // 'poll' or 'opinion'
   const [options, setOptions] = useState(['', '']);
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
   const [affiliateLinks, setAffiliateLinks] = useState(['', '']);
-  const NewPollModal = ({ onClose, onCreatePoll }) => {
 
   const handleOptionChange = (value, index) => {
     const updated = [...options];
@@ -35,10 +35,15 @@ import React, { useState } from 'react';
   };
 
   const handleSubmit = () => {
-    // Placeholder submission logic
-    console.log('Submitting:', { mode, options, images, video, affiliateLinks });
-alert('Poll submitted (mock)');
-onClose();
+    const newPoll = {
+      mode,
+      options,
+      images,
+      video,
+      affiliateLinks
+    };
+    onCreatePoll(newPoll);
+    onClose();
   };
 
   return (
